@@ -12,19 +12,17 @@ Buffer::Buffer(size_t byteSize, std::shared_ptr<DeviceAllocator> allocator,
       ptr_(ptr),
       useExternal_(useExternal),
       allocator_(allocator) {
-  if (!ptr_ && !allocator_) {
-    deviceType_ = allocator->deviceType();
+  if (!ptr_ && allocator_) {
+    deviceType_ = allocator_->deviceType();
     useExternal_ = false;
     ptr_ = allocator_->allocate(byteSize);
   }
 }
 
 Buffer::~Buffer() {
-  if (!useExternal_) {
-    if (ptr_ && allocator_) {
-      allocator_->release(ptr_);
-      ptr_ = nullptr;
-    }
+  if (!useExternal_ && ptr_ && allocator_) {
+    allocator_->release(ptr_);
+    ptr_ = nullptr;
   }
 }
 
@@ -49,8 +47,8 @@ void Buffer::copyFrom(const Buffer& buffer) const {
   size_t byteSize = std::min(byteSize_, buffer.byteSize_);
   const DeviceType& bufferDeviceType = buffer.deviceType();
   const DeviceType& currentDeviceType = deviceType_;
-  CHECK(bufferDeviceType != DeviceType::kDeviceUnkown &&
-        currentDeviceType != DeviceType::kDeviceUnkown)
+  CHECK(bufferDeviceType != DeviceType::kDeviceUnknown &&
+        currentDeviceType != DeviceType::kDeviceUnknown)
       << "Unknown device type.";
 
   if (bufferDeviceType == DeviceType::kDeviceCPU &&

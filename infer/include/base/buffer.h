@@ -24,6 +24,7 @@ class Buffer : public NoCopyable, std::enable_shared_from_this<Buffer> {
 
   void copyFrom(const Buffer* buffer) const;
 
+ public:
   inline void* ptr() { return ptr_; }
 
   inline const void* ptr() const { return ptr_; }
@@ -45,10 +46,17 @@ class Buffer : public NoCopyable, std::enable_shared_from_this<Buffer> {
   inline bool isExternal() const { return useExternal_; }
 
  private:
+  // The size of the buffer in bytes
   size_t byteSize_ = 0;
+  // Pointer to the buffer memory, two scenarios:
+  // 1. If useExternal_ is true, ptr_ is provided by the user
+  // 2. If useExternal_ is false, ptr_ is allocated by the allocator
   void* ptr_ = nullptr;
+  // Flag indicating if the buffer uses external memory
   bool useExternal_ = false;
-  DeviceType deviceType_ = DeviceType::kDeviceUnkown;
+  // The type of device the buffer is associated with
+  DeviceType deviceType_ = DeviceType::kDeviceUnknown;
+  // Allocator used for managing the buffer's memory
   std::shared_ptr<DeviceAllocator> allocator_;
 };
 

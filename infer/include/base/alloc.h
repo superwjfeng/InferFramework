@@ -35,7 +35,7 @@ class DeviceAllocator {
                           bool needSync = false);
 
  private:
-  DeviceType deviceType_ = DeviceType::kDeviceUnkown;
+  DeviceType deviceType_ = DeviceType::kDeviceUnknown;
 };
 
 class CPUDeviceAllocator : public DeviceAllocator {
