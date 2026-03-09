@@ -95,8 +95,8 @@ else()
 endif()
 
 
-# aux_source_directory(kuiper/source/tensor/ DIR_TENSOR)
 aux_source_directory(infer/src/base/ DIR_BASE)
+aux_source_directory(infer/src/tensor/ DIR_TENSOR)
 # aux_source_directory(kuiper/source/op/ DIR_OP)
 # aux_source_directory(kuiper/source/model/ DIR_MODEL)
 # aux_source_directory(kuiper/source/op/kernels/cpu DIR_KERNEL_CPU)
@@ -107,7 +107,7 @@ aux_source_directory(infer/src/base/ DIR_BASE)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 # add_library(llama SHARED ${DIR_TENSOR} ${DIR_BASE} ${DIR_OP} ${DIR_KERNEL} ${DIR_MODEL} ${DIR_KERNEL_CPU} ${DIR_KERNEL_CUDA} ${DIR_KERNEL} ${DIR_SAMPLE})
-add_library(llama SHARED ${DIR_BASE})
+add_library(llama SHARED ${DIR_BASE} ${DIR_TENSOR})
 target_link_libraries(llama PRIVATE sentencepiece glog::glog gtest gtest_main pthread cudart armadillo)
 target_link_directories(llama PUBLIC ${CMAKE_CUDA_COMPILER_LIBRARY_ROOT}/lib64)
 
