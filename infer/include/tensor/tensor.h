@@ -27,7 +27,6 @@ static size_t reduceDimension(T begin, T end, Tp init) {
   return size;
 }
 
-
 class Tensor {
  public:
   Tensor() = default;
@@ -58,11 +57,11 @@ class Tensor {
  public:
   inline size_t size() const { return size_; }
 
-  inline size_t byteSize() const {
-    return size_ * dataTypeSize(dataType_);
-  }
+  inline size_t byteSize() const { return size_ * dataTypeSize(dataType_); }
 
   inline const std::vector<int32_t>& dims() const { return dims_; }
+
+  inline int32_t dimSize() const { return dims_.size(); }
 
   inline int32_t getDim(int32_t idx) const {
     CHECK_GE(idx, 0);
@@ -117,6 +116,12 @@ class Tensor {
   const T* ptr() const;
 
   template <typename T>
+  T* ptr(int64_t index);
+
+  template <typename T>
+  const T* ptr(int64_t index) const;
+
+  template <typename T>
   T& index(int64_t offset);
 
   template <typename T>
@@ -148,5 +153,54 @@ class Tensor {
   // dataType_ specifies the data type of the elements in the tensor
   base::DataType dataType_ = base::DataType::kDataTypeUnknown;
 };
+
+template <typename T>
+T& Tensor::index(int64_t offset) {
+  CHECK_GE(offset, 0);
+  CHECK_LT(offset, size_);
+  T& val = *(reinterpret_cast<T*>(buffer_->ptr()) + offset);
+  return val;
+}
+
+template <typename T>
+const T& Tensor::index(int64_t offset) const {
+  CHECK_GE(offset, 0);
+  CHECK_LT(offset, size_);
+  const T& val = *(reinterpret_cast<T*>(buffer_->ptr()) + offset);
+  return val;
+}
+
+template <typename T>
+const T* Tensor::ptr() const {
+  if (!buffer_) {
+    return nullptr;
+  }
+  return const_cast<const T*>(reinterpret_cast<T*>(buffer_->ptr()));
+}
+
+template <typename T>
+T* Tensor::ptr() {
+  if (!buffer_) {
+    return nullptr;
+  }
+  return reinterpret_cast<T*>(buffer_->ptr());
+}
+
+template <typename T>
+T* Tensor::ptr(int64_t index) {
+  CHECK(buffer_ != nullptr && buffer_->ptr() != nullptr)
+      << "The data area buffer of this tensor is empty or it points to a null "
+         "pointer.";
+  return const_cast<T*>(reinterpret_cast<const T*>(buffer_->ptr())) + index;
+}
+
+template <typename T>
+const T* Tensor::ptr(int64_t index) const {
+  CHECK(buffer_ != nullptr && buffer_->ptr() != nullptr)
+      << "The data area buffer of this tensor is empty or it points to a null "
+         "pointer.";
+  return reinterpret_cast<const T*>(buffer_->ptr()) + index;
+}
+
 }  // namespace tensor
 #endif  // INFER_INCLUDE_TENSOR_TENSOR_H_
