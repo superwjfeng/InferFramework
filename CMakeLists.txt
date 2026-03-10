@@ -111,9 +111,9 @@ add_library(llama SHARED ${DIR_BASE} ${DIR_TENSOR} ${DIR_OP} ${DIR_KERNEL} ${DIR
 target_link_libraries(llama PRIVATE sentencepiece glog::glog gtest gtest_main pthread cudart armadillo)
 target_link_directories(llama PUBLIC ${CMAKE_CUDA_COMPILER_LIBRARY_ROOT}/lib64)
 
+target_include_directories(llama PUBLIC ${PROJECT_SOURCE_DIR}/infer/include)
 target_include_directories(llama PUBLIC ${glog_INCLUDE_DIR})
 target_include_directories(llama PUBLIC ${Armadillo_INCLUDE_DIR})
-target_include_directories(llama PUBLIC ${PROJECT_SOURCE_DIR}/infer/include)
 target_include_directories(llama PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 if(USE_CPM)
@@ -123,4 +123,4 @@ endif()
 
 set_target_properties(llama PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 add_subdirectory(test)
-# add_subdirectory(demo)
+add_subdirectory(demo)
