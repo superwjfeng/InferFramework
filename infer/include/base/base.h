@@ -12,8 +12,31 @@
     (void)(expr);    \
   } while (0)
 
-namespace base {
+namespace model {
+enum class ModelBufferType {
+  kInputTokens = 0,
+  kInputEmbeddings = 1,
+  kOutputRMSNorm = 2,
+  kKeyCache = 3,
+  kValueCache = 4,
+  kQuery = 5,
+  kInputPos = 6,
+  kScoreStorage = 7,
+  kOutputMHA = 8,
+  kAttnOutput = 9,
+  kW1Output = 10,
+  kW2Output = 11,
+  kW3Output = 12,
+  kFFNRMSNorm = 13,
+  kForwardOutput = 15,
+  kForwardOutputCPU = 16,
 
+  kSinCache = 17,
+  kCosCache = 18,
+};
+}  // namespace model
+
+namespace base {
 // * k stands for Const, which is a common naming convention for enum values.
 enum class DeviceType : uint8_t {
   kDeviceUnknown = 0,
@@ -42,6 +65,18 @@ inline size_t dataTypeSize(base::DataType dataType) {
       return 0;
   }
 }
+
+enum class ModelType : uint8_t {
+  kModelTypeUnknown = 0,
+  kModelTypeLLaMA2 = 1,
+  kModelTypeQWen = 2
+};
+
+enum class TokenizerType {
+  kEncodeUnknown = -1,
+  kEncodeSpe = 0,
+  kEncodeBpe = 1,
+};
 
 class NoCopyable {
  protected:
@@ -101,7 +136,7 @@ namespace error {
       snprintf(                                                             \
           buf, buf_size - 1,                                                \
           "Infer error\n File:%s Line:%d\n Error code:%d\n Error msg:%s\n", \
-          __FILE__, __LINE__, int(status), status.getErrMsg().c_str());   \
+          __FILE__, __LINE__, int(status), status.getErrMsg().c_str());     \
       LOG(FATAL) << buf;                                                    \
     }                                                                       \
   } while (0)
